@@ -252,10 +252,10 @@ func msg(err error) int {
 	return 0
 }
 
-func filterMarkdown(files []string) []string {
+func filterConfluencewiki(files []string) []string {
 	var newfiles []string
 	for _, file := range files {
-		if strings.HasSuffix(file, ".md") {
+		if strings.HasSuffix(file, ".confluencewiki") {
 			newfiles = append(newfiles, file)
 		}
 	}
@@ -323,7 +323,7 @@ func cmdList(c *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	files = filterMarkdown(files)
+	files = filterConfluencewiki(files)
 	istty := isatty.IsTerminal(os.Stdout.Fd())
 	col := cfg.Column
 	if col == 0 {
@@ -454,7 +454,7 @@ func cmdNew(c *cli.Context) error {
 	now := time.Now()
 	if c.Args().Present() {
 		title = c.Args().First()
-		file = now.Format("2006-01-02-") + escape(title) + ".md"
+		file = now.Format("2006-01-02-") + escape(title) + ".confluencewiki"
 	} else {
 		fmt.Print("Title: ")
 		scanner := bufio.NewScanner(os.Stdin)
@@ -467,10 +467,10 @@ func cmdNew(c *cli.Context) error {
 		title = scanner.Text()
 		if title == "" {
 			title = now.Format("2006-01-02")
-			file = title + ".md"
+			file = title + ".confluencewiki"
 
 		} else {
-			file = now.Format("2006-01-02-") + escape(title) + ".md"
+			file = now.Format("2006-01-02-") + escape(title) + ".confluencewiki"
 		}
 	}
 	file = filepath.Join(cfg.MemoDir, file)
@@ -535,7 +535,7 @@ func cmdEdit(c *cli.Context) error {
 		if err != nil {
 			return err
 		}
-		files = filterMarkdown(files)
+		files = filterConfluencewiki(files)
 		var buf bytes.Buffer
 		err = cfg.runfilter(cfg.SelectCmd, strings.NewReader(strings.Join(files, "\n")), &buf)
 		if err != nil {
@@ -576,7 +576,7 @@ func cmdDelete(c *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	files = filterMarkdown(files)
+	files = filterConfluencewiki(files)
 	pat := c.Args().First()
 	var args []string
 	for _, file := range files {
@@ -628,7 +628,7 @@ func cmdGrep(c *cli.Context) error {
 	if err != nil || len(files) == 0 {
 		return err
 	}
-	files = filterMarkdown(files)
+	files = filterConfluencewiki(files)
 	var args []string
 	for _, file := range files {
 		args = append(args, filepath.Join(cfg.MemoDir, file))
@@ -668,6 +668,7 @@ func cmdConfig(c *cli.Context) error {
 }
 
 func cmdServe(c *cli.Context) error {
+  log.Fatal("Render confluencewiki markup is not supported.")
 	var cfg config
 	err := cfg.load()
 	if err != nil {
@@ -687,7 +688,7 @@ func cmdServe(c *cli.Context) error {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
-			files = filterMarkdown(files)
+			files = filterConfluencewiki(files)
 			var entries []entry
 			for _, file := range files {
 				entries = append(entries, entry{
